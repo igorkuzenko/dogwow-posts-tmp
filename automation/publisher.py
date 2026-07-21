@@ -99,9 +99,11 @@ def publish_ig_carousel(ig_id, job):
 
 
 def publish_ig_reel(ig_id, job):
-    cre = api(f"{ig_id}/media", method="POST", data={
-        "media_type": "REELS", "video_url": RAW + job["media"][0],
-        "caption": job["caption"], "share_to_feed": "true"})
+    data = {"media_type": "REELS", "video_url": RAW + job["media"][0],
+            "caption": job["caption"], "share_to_feed": "true"}
+    if job.get("cover"):
+        data["cover_url"] = RAW + job["cover"]
+    cre = api(f"{ig_id}/media", method="POST", data=data)
     wait_finished(cre["id"], job["id"])
     pub = api(f"{ig_id}/media_publish", method="POST", data={"creation_id": cre["id"]})
     return pub["id"]
