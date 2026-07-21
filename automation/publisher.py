@@ -98,13 +98,39 @@ def publish_ig_carousel(ig_id, job):
     return pub["id"]
 
 
+def trending_audio_id(ig_id):
+    """Aktuellen Top-Trending-Musiktrack holen (None bei Fehlern = ohne Musik posten)."""
+    try:
+        res = api("ig_audio", {"audio_type": "music", "ig_user_id": ig_id})
+        tracks = res.get("audio") or []
+        if tracks:
+            t = tracks[0]
+            print(f"[MUSIK] {t.get('title')} - {t.get('display_artist')} ({t['audio_id']})")
+            return t["audio_id"]
+    except Exception as e:
+        print(f"[WARN-MUSIK] Trending-Abruf fehlgeschlagen: {e}")
+    return None
+
+
 def publish_ig_reel(ig_id, job):
     data = {"media_type": "REELS", "video_url": RAW + job["media"][0],
             "caption": job["caption"], "share_to_feed": "true"}
     if job.get("cover"):
         data["cover_url"] = RAW + job["cover"]
-    cre = api(f"{ig_id}/media", method="POST", data=data)
-    wait_finished(cre["id"], job["id"])
+    aid = trending_audio_id(ig_id)
+    if aid:
+        data["audio_configuration"] = json.dumps(
+            {"audio_id": aid, "audio_volume": 100, "video_volume": 0})
+    try:
+        cre = api(f"{ig_id}/media", method="POST", data=data)
+        wait_finished(cre["id"], job["id"])
+    except Exception as e:
+        if not aid:
+            raise
+        print(f"[WARN-MUSIK] Container mit Musik fehlgeschlagen ({e}), Retry ohne Musik.")
+        data.pop("audio_configuration", None)
+        cre = api(f"{ig_id}/media", method="POST", data=data)
+        wait_finished(cre["id"], job["id"])
     pub = api(f"{ig_id}/media_publish", method="POST", data={"creation_id": cre["id"]})
     return pub["id"]
 
