@@ -98,26 +98,28 @@ def publish_ig_carousel(ig_id, job):
     return pub["id"]
 
 
-def trending_audio_id(ig_id):
-    """Aktuellen Top-Trending-Musiktrack holen (None bei Fehlern = ohne Musik posten)."""
+def trending_audio_id(ig_id, used):
+    """Ersten Trending-Track waehlen, der in den letzten 10 Reels nicht lief
+    (None bei Fehlern = ohne Musik posten)."""
     try:
         res = api("ig_audio", {"audio_type": "music", "ig_user_id": ig_id})
         tracks = res.get("audio") or []
-        if tracks:
-            t = tracks[0]
-            print(f"[MUSIK] {t.get('title')} - {t.get('display_artist')} ({t['audio_id']})")
-            return t["audio_id"]
+        recent = set(used[-10:])
+        pick = next((t for t in tracks if t["audio_id"] not in recent), tracks[0] if tracks else None)
+        if pick:
+            print(f"[MUSIK] {pick.get('title')} - {pick.get('display_artist')} ({pick['audio_id']})")
+            return pick["audio_id"]
     except Exception as e:
         print(f"[WARN-MUSIK] Trending-Abruf fehlgeschlagen: {e}")
     return None
 
 
-def publish_ig_reel(ig_id, job):
+def publish_ig_reel(ig_id, job, used_audio):
     data = {"media_type": "REELS", "video_url": RAW + job["media"][0],
             "caption": job["caption"], "share_to_feed": "true"}
     if job.get("cover"):
         data["cover_url"] = RAW + job["cover"]
-    aid = trending_audio_id(ig_id)
+    aid = trending_audio_id(ig_id, used_audio)
     if aid:
         data["audio_configuration"] = json.dumps(
             {"audio_id": aid, "audio_volume": 100, "video_volume": 0})
@@ -132,6 +134,8 @@ def publish_ig_reel(ig_id, job):
         cre = api(f"{ig_id}/media", method="POST", data=data)
         wait_finished(cre["id"], job["id"])
     pub = api(f"{ig_id}/media_publish", method="POST", data={"creation_id": cre["id"]})
+    if aid and "audio_configuration" in data:
+        used_audio.append(aid)
     return pub["id"]
 
 
@@ -207,7 +211,7 @@ def main():
         except Exception as e:
             print(f"[WARN-FB] {job['id']}: {e}")
     else:
-        mid = publish_ig_reel(info["ig_id"], job)
+        mid = publish_ig_reel(info["ig_id"], job, state.setdefault("used_audio", []))
         print(f"[OK-IG] {job['id']} -> media {mid}")
         try:
             fid = publish_fb_reel(info["page_id"], info["page_token"], job)
