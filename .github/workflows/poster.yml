@@ -1,0 +1,41 @@
+name: DogWOW Auto-Poster
+
+# Postet 2x/Tag auf @dogwowapp (IG) + Dogwowapp (FB-Page) ueber die Meta Graph API.
+# 13:00 UTC = 15:00 Berlin (CEST): Karussell (Slot a)
+# 21:55 UTC = 23:55 Berlin (CEST): Reel (Slot b)
+on:
+  schedule:
+    - cron: '0 13 * * *'
+    - cron: '55 21 * * *'
+  workflow_dispatch:
+    inputs:
+      slot:
+        description: 'Slot (a=Karussell, b=Reel, auto)'
+        default: 'auto'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dogwow-poster
+  cancel-in-progress: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Post next due job
+        env:
+          META_TOKEN: ${{ secrets.META_TOKEN }}
+        run: python3 automation/publisher.py --run --slot "${{ github.event.inputs.slot || 'auto' }}"
+      - name: Persist state
+        run: |
+          git config user.name "dogwow-poster-bot"
+          git config user.email "dogwow-poster-bot@users.noreply.github.com"
+          git add automation/state.json
+          git commit -m "state: advance posting [skip ci]" || echo "no state change"
+          git push
