@@ -25,7 +25,7 @@ pages_manage_posts, business_management als META_TOKEN (Secret) oder
   python3 publisher.py --dry-run --slot a
   python3 publisher.py --run --slot auto
 """
-import json, os, sys, time, argparse, datetime, urllib.request, urllib.parse, urllib.error
+import json, os, sys, time, random, argparse, datetime, urllib.request, urllib.parse, urllib.error
 
 GRAPH = "https://graph.facebook.com/v21.0"
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -98,20 +98,36 @@ def publish_ig_carousel(ig_id, job):
     return pub["id"]
 
 
-def trending_audio_id(ig_id, used):
-    """Ersten Trending-Track waehlen, der in den letzten 10 Reels nicht lief
-    (None bei Fehlern = ohne Musik posten)."""
-    try:
-        res = api("ig_audio", {"audio_type": "music", "ig_user_id": ig_id})
-        tracks = res.get("audio") or []
-        recent = set(used[-10:])
-        pick = next((t for t in tracks if t["audio_id"] not in recent), tracks[0] if tracks else None)
-        if pick:
-            print(f"[MUSIK] {pick.get('title')} - {pick.get('display_artist')} ({pick['audio_id']})")
-            return pick["audio_id"]
-    except Exception as e:
-        print(f"[WARN-MUSIK] Trending-Abruf fehlgeschlagen: {e}")
-    return None
+# Kuratiertes Musik-Set (froehlich/verspielt/instrumental, zum DogWOW-Vibe passend).
+# Alle am 22.07.2026 gegen das @dogwowapp-Konto getestet (Container FINISHED).
+# Trending-Top war unpassend (z.B. Politik-Rap), deshalb feste Auswahl + Zufall.
+AUDIO_SET = [
+    ("923813403749645",  "Happy Life - Giulio Cercato"),
+    ("1388161098514399", "Happy Days - Giulio Cercato"),
+    ("1239436176785052", "The Good Life - Giulio Cercato"),
+    ("583985389891126",  "Magic City - Giulio Cercato"),
+    ("811408122543043",  "Sunny Day - Jonny Houlihan"),
+    ("981174716484269",  "Feels Good (Instr) - d.higgs"),
+    ("1760819431391733", "Endless Summer - half.cool"),
+    ("2384023998437261", "Catch The Moment (Instr) - Red Yarn"),
+    ("1946865445712303", "Lost In The Moment (Instr) - Global Genius"),
+    ("1105788186291949", "It's A Kid's World - Global Genius"),
+    ("477751950729002",  "Cotton Candy Kisses - Global Genius"),
+    ("150504705576125",  "Quirky Bossa - Scott Dugdale"),
+    ("545242899293664",  "Happy Is A State of Mind - Keith Thomas"),
+]
+
+
+def pick_audio(used):
+    """Zufaelligen Track aus dem kuratierten Set, der in den letzten 6 Reels
+    nicht lief. None nur wenn das Set leer ist."""
+    recent = set(used[-6:])
+    pool = [(a, n) for a, n in AUDIO_SET if a not in recent] or AUDIO_SET
+    if not pool:
+        return None
+    aid, name = random.choice(pool)
+    print(f"[MUSIK] {name} ({aid})")
+    return aid
 
 
 def publish_ig_reel(ig_id, job, used_audio):
@@ -119,7 +135,7 @@ def publish_ig_reel(ig_id, job, used_audio):
             "caption": job["caption"], "share_to_feed": "true"}
     if job.get("cover"):
         data["cover_url"] = RAW + job["cover"]
-    aid = trending_audio_id(ig_id, used_audio)
+    aid = pick_audio(used_audio)
     if aid:
         data["audio_configuration"] = json.dumps(
             {"audio_id": aid, "audio_volume": 100, "video_volume": 0})
