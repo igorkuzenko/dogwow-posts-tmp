@@ -277,7 +277,13 @@ def main():
     state_path = os.path.join(HERE, cfg["state"])
     state = json.load(open(state_path)) if os.path.exists(state_path) else {"posted": []}
     done = set(state["posted"])
-    due = [j for j in jobs if j["id"] not in done and
+    now_utc = datetime.datetime.now(datetime.timezone.utc)
+    def ready(j):
+        nb = j.get("not_before")
+        if nb and now_utc < datetime.datetime.fromisoformat(nb.replace("Z", "+00:00")):
+            return False
+        return True
+    due = [j for j in jobs if j["id"] not in done and ready(j) and
            (slot == "any" or j["id"].endswith("-" + slot))]
     if not due:
         print(f"Slot {slot}: nichts mehr offen ({len(done)}/{len(jobs)} gepostet).")
