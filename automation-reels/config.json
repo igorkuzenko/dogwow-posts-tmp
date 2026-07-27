@@ -5,10 +5,29 @@
   "token_file": "~/.dogwow_meta_token",
   "jobs": "jobs.json",
   "state": "state.json",
-  "slots": {"a": [9, 12], "b": [15, 17], "c": [21, 23]},
+  "slots": {
+    "a": [
+      9,
+      12
+    ],
+    "b": [
+      15,
+      17
+    ],
+    "c": [
+      21,
+      23
+    ]
+  },
   "fb_enabled": false,
   "ig_music": "set",
-  "ig_audio_set": [],
+  "ig_audio_set": [
+    "1231203088367810",
+    "1044245831898294",
+    "4216755795268858",
+    "1540755600953104",
+    "978616620756584"
+  ],
   "ig_audio_volume": 25,
   "ig_video_volume": 100
 }
