@@ -302,7 +302,7 @@ def main():
     else:
         mid = IG[job["type"]](api, info["ig_id"], job, url)
     print(f"[OK-IG] {job['id']} -> {mid}")
-    if cfg["fb_enabled"]:
+    if job.get("fb", cfg["fb_enabled"]):
         try:
             fid = FB[job["type"]](api, info["page_id"], info["page_token"], job, url)
             print(f"[OK-FB] {job['id']} -> {fid}")

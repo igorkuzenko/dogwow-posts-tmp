@@ -6,7 +6,8 @@
    "media/reels1/dogwow_r01.mp4"
   ],
   "thumb_offset": 1200,
-  "caption": "Tag someone whose dog always knows. 🐾 He smells the sadness before your face shows it. You never cried alone. Not once. #dogsofinstagram #dogfacts #dogmom #dogdad #goldenretriever #doglove #DogWOW"
+  "caption": "Tag someone whose dog always knows. 🐾 He smells the sadness before your face shows it. You never cried alone. Not once. #dogsofinstagram #dogfacts #dogmom #dogdad #goldenretriever #doglove #DogWOW",
+  "fb": false
  },
  {
   "id": "r02-a",
@@ -16,7 +17,8 @@
   ],
   "thumb_offset": 1200,
   "caption": "What would YOUR dog confess after 9 hours alone? Wrong answers only. 👇 The sock is gone. These events are unrelated. #dogsofinstagram #corgi #dogmemes #pov #funnydogs #dogtok #DogWOW",
-  "not_before": "2026-07-28T09:00:00Z"
+  "not_before": "2026-07-28T09:00:00Z",
+  "fb": false
  },
  {
   "id": "r03-b",
@@ -26,7 +28,8 @@
   ],
   "thumb_offset": 1200,
   "caption": "Send this to someone who needs to hear their dog. 🥺 Dogs sigh to release disappointment. He heard your keys. He did the math. #dogsofinstagram #beagle #dogfacts #emotional #dogparents #DogWOW",
-  "not_before": "2026-07-28T15:00:00Z"
+  "not_before": "2026-07-28T15:00:00Z",
+  "fb": false
  },
  {
   "id": "r04-c",
@@ -36,7 +39,8 @@
   ],
   "thumb_offset": 1200,
   "caption": "Be honest, did you know this? 👇 Save it for your next walk. A wagging tail is not what you think. Slow = relaxed. Stiff = tension. #dogfacts #dogtraining #bordercollie #dogbehavior #didyouknow #DogWOW",
-  "not_before": "2026-07-28T21:00:00Z"
+  "not_before": "2026-07-28T21:00:00Z",
+  "fb": false
  },
  {
   "id": "r05-a",
@@ -46,6 +50,7 @@
   ],
   "thumb_offset": 1200,
   "caption": "The audacity of us honestly 😭 What does your dog think the vet is? 👇 Joy. Suspicion. Betrayal. Treat. Repeat. #frenchie #dogmemes #vetvisit #pov #funnydogs #dogsofinstagram #DogWOW",
-  "not_before": "2026-07-29T09:00:00Z"
+  "not_before": "2026-07-29T09:00:00Z",
+  "fb": false
  }
 ]
