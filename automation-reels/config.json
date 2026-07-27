@@ -1,0 +1,14 @@
+{
+  "ig_handle": "dogwowapp",
+  "raw_base": "https://raw.githubusercontent.com/igorkuzenko/dogwow-posts-tmp/main/",
+  "token_env": "META_TOKEN",
+  "token_file": "~/.dogwow_meta_token",
+  "jobs": "jobs.json",
+  "state": "state.json",
+  "slots": {"a": [9, 12], "b": [15, 17], "c": [21, 23]},
+  "fb_enabled": false,
+  "ig_music": "set",
+  "ig_audio_set": [],
+  "ig_audio_volume": 25,
+  "ig_video_volume": 100
+}
