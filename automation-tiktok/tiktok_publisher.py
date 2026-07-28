@@ -51,8 +51,9 @@ def load(name, default=None, dirpath=None):
     return json.load(open(p))
 
 
-def secret():
-    for p in ("~/.tiktok_app_secret",):
+def secret(cfg=None):
+    cands = [(cfg or {}).get("secret_file"), "~/.tiktok_app_secret"]
+    for p in [c for c in cands if c]:
         f = os.path.expanduser(p)
         if os.path.exists(f):
             return open(f).read().strip()
@@ -109,7 +110,7 @@ def exchange(cfg, account, code_file="~/.tiktok_auth_code"):
                  f"`pbpaste | tr -d '[:space:]' > {code_file}` ausfuehren.")
     code = urllib.parse.unquote(open(f).read().strip())
     res = post_json("/oauth/token/", {
-        "client_key": cfg["client_key"], "client_secret": secret(), "code": code,
+        "client_key": cfg["client_key"], "client_secret": secret(cfg), "code": code,
         "grant_type": "authorization_code", "redirect_uri": cfg["redirect_uri"]}, form=True)
     if "access_token" not in res:
         sys.exit(f"FEHLER beim Token-Tausch: {json.dumps(res)[:300]}")
@@ -126,7 +127,7 @@ def access_token(cfg, account):
     if tok.get("expires_at", 0) > time.time():
         return tok["access_token"]
     res = post_json("/oauth/token/", {
-        "client_key": cfg["client_key"], "client_secret": secret(),
+        "client_key": cfg["client_key"], "client_secret": secret(cfg),
         "grant_type": "refresh_token", "refresh_token": tok["refresh_token"]}, form=True)
     if "access_token" not in res:
         sys.exit(f"FEHLER beim Refresh: {json.dumps(res)[:300]}")

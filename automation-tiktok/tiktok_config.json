@@ -1,9 +1,13 @@
 {
-  "client_key": "awzrct8zehrv06wq",
+  "client_key": "sbawpbfpg1it9xmus9",
   "redirect_uri": "https://dogwow.app/tiktok-callback",
   "videos_base": "https://dogwow.app/reels",
   "default_privacy": "SELF_ONLY",
   "accounts": {
-    "dogwow": {"token_file": "~/.tiktok_token_dogwow.json"}
-  }
+    "dogwow": {
+      "token_file": "~/.tiktok_token_dogwow.json"
+    }
+  },
+  "secret_file": "~/.tiktok_sandbox_secret",
+  "sandbox": true
 }
